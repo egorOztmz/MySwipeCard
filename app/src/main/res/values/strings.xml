@@ -2,4 +2,8 @@
     <string name="app_name">My Swipe Card</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="network_error_connection">Connection Error!</string>
+    <string name="network_error_api">Network API Error: </string>
+    <string name="network_error_no_record">No More Records!</string>
+    <string name="snackbar_action_retry">RETRY</string>
 </resources>
