@@ -24,7 +24,7 @@ class CardsFragment : Fragment(R.layout.fragment_cards) {
     private fun init(view: View) {
         val binding = FragmentCardsBinding.bind(view)
 
-        cardsViewModel.characters.observe(viewLifecycleOwner) {
+        cardsViewModel.characters.observe(viewLifecycleOwner) { it ->
             when(it.status) {
                 Status.LOADING -> {
                     binding.progressBarContainer.visibility = View.VISIBLE
@@ -40,6 +40,8 @@ class CardsFragment : Fragment(R.layout.fragment_cards) {
                 }
                 Status.SUCCESS -> {
                     binding.progressBarContainer.visibility = View.GONE
+                    if(!it.data.isNullOrEmpty())
+                        binding.character = it.data[0]
                 }
             }
         }

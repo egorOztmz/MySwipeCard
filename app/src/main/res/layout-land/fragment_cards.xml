@@ -43,15 +43,16 @@
             </FrameLayout>
 
             <ImageView
+                android:id="@+id/imageView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:contentDescription="@string/content_description_image_profile"
-                app:layout_constraintBottom_toTopOf="@id/imageGuideline"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 android:scaleType="centerCrop"
                 app:imageUrl="@{character.image}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imageGuideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:placeholder="@{@drawable/placeholder}"
                 tools:src="@mipmap/ic_launcher" />
 
@@ -59,15 +60,22 @@
                 android:id="@+id/imageGuideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.6" />
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/textGuideline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.05" />
+                app:layout_constraintGuide_percent="0.53" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/textEndGuideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.97" />
 
             <TextView
                 android:id="@+id/tvName"
@@ -80,7 +88,7 @@
                 android:textSize="32sp"
                 android:textStyle="bold"
                 android:text="@{character.name}"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/textEndGuideline"
                 app:layout_constraintStart_toStartOf="@id/textGuideline"
                 app:layout_constraintTop_toBottomOf="@id/imageGuideline"
                 tools:text="Toxic Rick" />
@@ -93,7 +101,7 @@
                 android:fontFamily="sans-serif-medium"
                 android:paddingVertical="4dp"
                 android:text="@{character.location.name}"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/textEndGuideline"
                 app:layout_constraintStart_toStartOf="@id/textGuideline"
                 app:layout_constraintTop_toBottomOf="@id/tvName"
                 app:drawableLeftCompat="@drawable/ic_baseline_location_on"
@@ -104,18 +112,16 @@
             <ImageView
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvLocation"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:health_status="@{character.status}"
+                android:contentDescription="@string/content_description_image_status"
                 android:src="@drawable/ic_status_dead"
-                android:contentDescription="@string/content_description_image_status" />
+                app:health_status="@{character.status}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textEndGuideline"
+                app:layout_constraintStart_toStartOf="@+id/textGuideline"
+                app:layout_constraintTop_toBottomOf="@+id/tvLocation" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
 
 </layout>
-
-

@@ -6,4 +6,6 @@
     <string name="network_error_api">Network API Error: </string>
     <string name="network_error_no_record">No More Records!</string>
     <string name="snackbar_action_retry">RETRY</string>
+    <string name="content_description_image_profile">Profile</string>
+    <string name="content_description_image_status">Status</string>
 </resources>
