@@ -1,12 +1,16 @@
 package com.oztmzegor.myswipecard.di
 
+import android.content.Context
 import com.oztmzegor.myswipecard.data.SwipeCardRepository
 import com.oztmzegor.myswipecard.data.SwipeCardRepositoryImpl
 import com.oztmzegor.myswipecard.data.network.BASE_URL
 import com.oztmzegor.myswipecard.data.network.RickAndMortyApi
+import com.oztmzegor.myswipecard.util.ResourceProvider
+import com.oztmzegor.myswipecard.util.ResourceProviderImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -30,5 +34,10 @@ object AppModule {
     @Provides
     fun providesSwipeCardRepository(rickAndMortyApi: RickAndMortyApi) : SwipeCardRepository =
             SwipeCardRepositoryImpl(rickAndMortyApi)
+
+    @Singleton
+    @Provides
+    fun providesResourceProvider(@ApplicationContext context: Context) :ResourceProvider =
+        ResourceProviderImpl(context)
 
 }

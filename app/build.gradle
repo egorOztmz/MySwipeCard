@@ -36,6 +36,9 @@ android {
         viewBinding = true
         dataBinding = true
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 def nav_version = "2.3.5"

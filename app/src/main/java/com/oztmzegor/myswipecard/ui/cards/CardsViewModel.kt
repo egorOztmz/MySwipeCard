@@ -10,6 +10,7 @@ import com.oztmzegor.myswipecard.R
 import com.oztmzegor.myswipecard.data.SwipeCardRepository
 import com.oztmzegor.myswipecard.data.model.Character
 import com.oztmzegor.myswipecard.util.Resource
+import com.oztmzegor.myswipecard.util.ResourceProvider
 import com.oztmzegor.myswipecard.util.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -21,8 +22,8 @@ private const val TAG = "CardsViewModel"
 
 @HiltViewModel
 class CardsViewModel @Inject constructor(
-        @ApplicationContext private val context : Context,
-        private val swipeCardRepository: SwipeCardRepository
+        private val swipeCardRepository: SwipeCardRepository,
+        private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _characters = MutableLiveData<Resource<List<Character>>>()
@@ -37,21 +38,21 @@ class CardsViewModel @Inject constructor(
                 swipeCardRepository.getCharacters(page)
             }
             catch (e : Exception) {
-                _characters.postValue(Resource.error(context.getString(R.string.network_error_connection)))
+                _characters.postValue(Resource.error(resourceProvider.getString(R.string.network_error_connection)))
                 e.printStackTrace()
                 return@launch
             }
 
             if(!response.isSuccessful) {
                 Log.e(TAG, "loadCharacters: Network request error -> ${response.code()}")
-                _characters.postValue(Resource.error(context.getString(R.string.network_error_api) + response.code()))
+                _characters.postValue(Resource.error(resourceProvider.getString(R.string.network_error_api) + response.code()))
                 return@launch
             }
 
             val charactersDto = response.body()
             if(charactersDto == null || charactersDto.results.isNullOrEmpty()) {
                 Log.w(TAG, "loadCharacters: Response was empty...")
-                _characters.postValue(Resource.error(context.getString(R.string.network_error_no_record)))
+                _characters.postValue(Resource.error(resourceProvider.getString(R.string.network_error_no_record)))
                 return@launch
             }
 

@@ -3,6 +3,6 @@ package com.oztmzegor.myswipecard.data.model
 import com.google.gson.annotations.SerializedName
 
 data class Origin (
-		@SerializedName("name") val name : String,
-		@SerializedName("url") val url : String
+		@SerializedName("name") val name : String? = null,
+		@SerializedName("url") val url : String? = null
 )
