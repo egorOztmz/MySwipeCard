@@ -20,22 +20,43 @@ import javax.inject.Inject
 
 private const val TAG = "CardsViewModel"
 
+private const val MIN_NUM_ELEMENTS_FOR_NETWORKING = 1
+
 @HiltViewModel
 class CardsViewModel @Inject constructor(
         private val swipeCardRepository: SwipeCardRepository,
         private val resourceProvider: ResourceProvider
 ) : ViewModel() {
+    private var currentPage = 0
+    private var maxPage = 0
+    private var currentCharacters : MutableList<Character> = mutableListOf()
 
     private val _characters = MutableLiveData<Resource<List<Character>>>()
     val characters : LiveData<Resource<List<Character>>>
         get() = _characters
 
-    fun loadCharacters(page : Int = 0) {
-        _characters.value = Resource.loading()
+    fun consumeCharacter() {
+        currentCharacters.removeAt(0)
 
+        if(currentCharacters.size <= MIN_NUM_ELEMENTS_FOR_NETWORKING)
+            loadCharacters()
+    }
+
+    fun loadCharacters() {
+        Log.d(TAG, "loadCharacters: ")
+
+        if(currentCharacters.size > MIN_NUM_ELEMENTS_FOR_NETWORKING) {
+            _characters.postValue(Resource.success(currentCharacters))
+            return
+        }
+
+        _characters.value = Resource.loading()
         viewModelScope.launch {
             val response = try {
-                swipeCardRepository.getCharacters(page)
+                if(currentPage >= maxPage)
+                    currentPage = 0
+
+                swipeCardRepository.getCharacters(currentPage +1)
             }
             catch (e : Exception) {
                 _characters.postValue(Resource.error(resourceProvider.getString(R.string.network_error_connection)))
@@ -56,10 +77,11 @@ class CardsViewModel @Inject constructor(
                 return@launch
             }
 
-            with(charactersDto.results) {
-                _characters.postValue(Resource.success(this))
-                Log.d(TAG, "loadCharacters: $this")
-            }
+            maxPage = charactersDto.info?.pages ?: 0
+            currentCharacters.addAll(charactersDto.results)
+            _characters.postValue(Resource.success(currentCharacters))
+            currentPage += 1
+            Log.d(TAG, "loadCharacters: $currentCharacters")
         }
     }
 }

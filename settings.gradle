@@ -1,2 +1,3 @@
+include ':myswipecards'
 include ':app'
 rootProject.name = "My Swipe Card"
