@@ -9,11 +9,13 @@ import androidx.lifecycle.viewModelScope
 import com.oztmzegor.myswipecard.R
 import com.oztmzegor.myswipecard.data.SwipeCardRepository
 import com.oztmzegor.myswipecard.data.model.Character
+import com.oztmzegor.myswipecard.util.Event
 import com.oztmzegor.myswipecard.util.Resource
 import com.oztmzegor.myswipecard.util.ResourceProvider
 import com.oztmzegor.myswipecard.util.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import javax.inject.Inject
@@ -31,8 +33,8 @@ class CardsViewModel @Inject constructor(
     private var maxPage = 0
     private var currentCharacters : MutableList<Character> = mutableListOf()
 
-    private val _characters = MutableLiveData<Resource<List<Character>>>()
-    val characters : LiveData<Resource<List<Character>>>
+    private val _characters = MutableLiveData<Event<Resource<List<Character>>>>()
+    val characters : LiveData<Event<Resource<List<Character>>>>
         get() = _characters
 
     fun consumeCharacter() {
@@ -46,12 +48,12 @@ class CardsViewModel @Inject constructor(
         Log.d(TAG, "loadCharacters: ")
 
         if(currentCharacters.size > MIN_NUM_ELEMENTS_FOR_NETWORKING) {
-            _characters.postValue(Resource.success(currentCharacters))
+            _characters.postValue(Event(Resource.success(currentCharacters)))
             return
         }
 
-        _characters.value = Resource.loading()
-        viewModelScope.launch {
+        _characters.value = Event(Resource.loading())
+        viewModelScope.launch(Dispatchers.IO) {
             val response = try {
                 if(currentPage >= maxPage)
                     currentPage = 0
@@ -59,27 +61,27 @@ class CardsViewModel @Inject constructor(
                 swipeCardRepository.getCharacters(currentPage +1)
             }
             catch (e : Exception) {
-                _characters.postValue(Resource.error(resourceProvider.getString(R.string.network_error_connection)))
+                _characters.postValue(Event(Resource.error(resourceProvider.getString(R.string.network_error_connection))))
                 e.printStackTrace()
                 return@launch
             }
 
             if(!response.isSuccessful) {
                 Log.e(TAG, "loadCharacters: Network request error -> ${response.code()}")
-                _characters.postValue(Resource.error(resourceProvider.getString(R.string.network_error_api) + response.code()))
+                _characters.postValue(Event(Resource.error(resourceProvider.getString(R.string.network_error_api) + response.code())))
                 return@launch
             }
 
             val charactersDto = response.body()
             if(charactersDto == null || charactersDto.results.isNullOrEmpty()) {
                 Log.w(TAG, "loadCharacters: Response was empty...")
-                _characters.postValue(Resource.error(resourceProvider.getString(R.string.network_error_no_record)))
+                _characters.postValue(Event(Resource.error(resourceProvider.getString(R.string.network_error_no_record))))
                 return@launch
             }
 
             maxPage = charactersDto.info?.pages ?: 0
             currentCharacters.addAll(charactersDto.results)
-            _characters.postValue(Resource.success(currentCharacters))
+            _characters.postValue(Event(Resource.success(currentCharacters)))
             currentPage += 1
             Log.d(TAG, "loadCharacters: $currentCharacters")
         }

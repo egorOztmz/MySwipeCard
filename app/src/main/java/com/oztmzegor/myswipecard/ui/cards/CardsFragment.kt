@@ -31,24 +31,26 @@ class CardsFragment : Fragment(R.layout.fragment_cards) {
         val adapter = CharacterAdapter()
         binding.swipeCardView.cardItemAdapter = adapter
 
-        cardsViewModel.characters.observe(viewLifecycleOwner) {
-            when(it.status) {
-                Status.LOADING -> {
-                    binding.progressBarContainer.visibility = View.VISIBLE
-                }
-                Status.ERROR -> {
-                    binding.progressBarContainer.visibility = View.GONE
+        cardsViewModel.characters.observe(viewLifecycleOwner) {event ->
+            event.getContentIfNotHandled()?.let {
+                when(it.status) {
+                    Status.LOADING -> {
+                        binding.progressBarContainer.visibility = View.VISIBLE
+                    }
+                    Status.ERROR -> {
+                        binding.progressBarContainer.visibility = View.GONE
 
-                    Snackbar.make(view, it.message ?: "Error", Snackbar.LENGTH_LONG).apply {
-                        setAction(R.string.snackbar_action_retry) {
-                            cardsViewModel.loadCharacters()
-                        }
-                    }.show()
-                }
-                Status.SUCCESS -> {
-                    binding.progressBarContainer.visibility = View.GONE
-                    if(!it.data.isNullOrEmpty())
-                        adapter.setCards(it.data)
+                        Snackbar.make(view, it.message ?: "Error", Snackbar.LENGTH_LONG).apply {
+                            setAction(R.string.snackbar_action_retry) {
+                                cardsViewModel.loadCharacters()
+                            }
+                        }.show()
+                    }
+                    Status.SUCCESS -> {
+                        binding.progressBarContainer.visibility = View.GONE
+                        if(!it.data.isNullOrEmpty())
+                            adapter.setCards(it.data)
+                    }
                 }
             }
         }
