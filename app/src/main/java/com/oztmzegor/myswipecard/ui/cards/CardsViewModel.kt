@@ -15,6 +15,7 @@ import com.oztmzegor.myswipecard.util.ResourceProvider
 import com.oztmzegor.myswipecard.util.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -27,7 +28,8 @@ private const val MIN_NUM_ELEMENTS_FOR_NETWORKING = 1
 @HiltViewModel
 class CardsViewModel @Inject constructor(
         private val swipeCardRepository: SwipeCardRepository,
-        private val resourceProvider: ResourceProvider
+        private val resourceProvider: ResourceProvider,
+        private val backgroundDispatcher: CoroutineDispatcher
 ) : ViewModel() {
     private var currentPage = 0
     private var maxPage = 0
@@ -53,7 +55,7 @@ class CardsViewModel @Inject constructor(
         }
 
         _characters.value = Event(Resource.loading())
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(backgroundDispatcher) {
             val response = try {
                 if(currentPage >= maxPage)
                     currentPage = 0

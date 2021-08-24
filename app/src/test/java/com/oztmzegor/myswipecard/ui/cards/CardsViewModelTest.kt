@@ -41,7 +41,7 @@ class CardsViewModelTest {
     fun setUp() {
         mockRepository = mock(SwipeCardRepository::class.java)
         mockResourceProvider = mock(ResourceProvider::class.java)
-        sut = CardsViewModel(mockRepository, mockResourceProvider)
+        sut = CardsViewModel(mockRepository, mockResourceProvider, mainCoroutineRule.testDispatcher)
     }
 
     @Test
@@ -55,7 +55,7 @@ class CardsViewModelTest {
 
         //then
         val characters = sut.characters.getOrAwaitValue()
-        assertThat(characters.status).isEqualTo(Status.ERROR)
+        assertThat(characters.getContentIfNotHandled()!!.status).isEqualTo(Status.ERROR)
     }
 
     @Test
@@ -70,7 +70,7 @@ class CardsViewModelTest {
 
         //then
         val characters = sut.characters.getOrAwaitValue()
-        assertThat(characters.status).isEqualTo(Status.ERROR)
+        assertThat(characters.getContentIfNotHandled()!!.status).isEqualTo(Status.ERROR)
     }
 
     @Test
@@ -86,7 +86,7 @@ class CardsViewModelTest {
 
         //then
         val characters = sut.characters.getOrAwaitValue()
-        assertThat(characters.status).isEqualTo(Status.ERROR)
+        assertThat(characters.getContentIfNotHandled()!!.status).isEqualTo(Status.ERROR)
     }
 
     @Test
@@ -104,7 +104,8 @@ class CardsViewModelTest {
 
         //then
         val characters = sut.characters.getOrAwaitValue()
-        assertThat(characters.status).isEqualTo(Status.SUCCESS)
-        assertThat(characters.data).containsExactly(character1, character2)
+        val resource = characters.getContentIfNotHandled()
+        assertThat(resource!!.status).isEqualTo(Status.SUCCESS)
+        assertThat(resource!!.data).containsExactly(character1, character2)
     }
 }
